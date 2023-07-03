@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sleep Cycle Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+    }
+
+    input[type="time"],
+    input[type="number"] {
+      width: 100%;
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sleep Cycle Calculator</h1>
+    <div class="form-group">
+      <label for="targetTime">Target Wake-up Time:</label>
+      <input type="time" id="targetTime" name="targetTime">
+    </div>
+    <div class="form-group">
+      <label for="sleepCycles">Desired Sleep Cycles:</label>
+      <input type="number" id="sleepCycles" name="sleepCycles">
+    </div>
+    <button onclick="showSleepSchedules()">Calculate</button>
+    <div id="result"></div>
+
+    <script>
+      function calculateSleepSchedule(desiredWakeUpTime, desiredSleepCycles) {
+        var wakeUpTimeParts = desiredWakeUpTime.split(":");
+        var wakeUpTime = new Date();
+        wakeUpTime.setHours(parseInt(wakeUpTimeParts[0]));
+        wakeUpTime.setMinutes(parseInt(wakeUpTimeParts[1]));
+
+        var sleepCycleLength = 90; // Assuming each sleep cycle is 90 minutes
+        var sleepSchedules = [];
+
+        for (var i = 1; i <= 4; i++) {
+          var sleepCycles = desiredSleepCycles * i;
+          var bedTime = new Date(wakeUpTime.getTime() - sleepCycles * sleepCycleLength * 60000); // Convert minutes to milliseconds
+
+          var bedTimeHours = bedTime.getHours();
+          var bedTimeMinutes = bedTime.getMinutes();
+          var wakeUpTimeHours = wakeUpTime.getHours();
+          var wakeUpTimeMinutes = wakeUpTime.getMinutes();
+
+          sleepSchedules.push({
+            bedTime: formatTime(bedTimeHours, bedTimeMinutes),
+            wakeUpTime: formatTime(wakeUpTimeHours, wakeUpTimeMinutes)
+          });
+        }
+
+        return sleepSchedules;
+      }
+
+      function formatTime(hours, minutes) {
+        var formattedHours = hours < 10 ? "0" + hours : hours;
+        var formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+        return formattedHours + ":" + formattedMinutes;
+      }
+
+      function showSleepSchedules() {
+        var targetTimeInput = document.getElementById("targetTime").value;
+        var sleepCyclesInput = document.getElementById("sleepCycles").value;
+        var sleepSchedules = calculateSleepSchedule(targetTimeInput, sleepCyclesInput);
+
+        var resultContainer = document.getElementById("result");
+        resultContainer.innerHTML = ""; // Clear previous results
+
+        sleepSchedules.forEach(function(schedule, index) {
+          var result = document.createElement("p");
+          result.textContent = "Recommendation " + (index + 1) + ": Bedtime - " + schedule.bedTime + ", Wake-up Time - " + schedule.wakeUpTime;
+
+          resultContainer.appendChild(result);
+        });
+      }
+    </script>
+  </div>
+</body>
+</html>
